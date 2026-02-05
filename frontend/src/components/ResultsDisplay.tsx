@@ -1,5 +1,5 @@
 import LoShuGrid from './LoShuGrid';
-import ForecastSection from './ForecastSection';
+import TimePeriodTracker from './TimePeriodTracker';
 import { Award, Briefcase, Hash, Calendar, Layers } from 'lucide-react';
 
 type Props = {
@@ -109,11 +109,7 @@ export default function ResultsDisplay({ data }: Props) {
                 </div>
             </div>
 
-            {/* Forecast Section */}
-            <ForecastSection
-                yearly={data.periods.yearly_forecast}
-                monthly={data.periods.monthly_forecast}
-            />
+
 
         </div>
     );
