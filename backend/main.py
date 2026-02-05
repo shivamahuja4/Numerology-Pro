@@ -24,16 +24,20 @@ def read_root():
 
 @app.post("/analyze")
 def analyze(request: AnalysisRequest):
-    mulank = numerology.calculate_mulank(request.dob)
-    bhagyank = numerology.calculate_bhagyank(request.dob)
-    kua = numerology.calculate_kua(request.dob, request.gender)
-    loshu = numerology.generate_lo_shu_grid(request.dob)
-    periods = numerology.calculate_personal_periods(request.dob)
-    
-    return {
-        "mulank": mulank,
-        "bhagyank": bhagyank,
-        "kua": kua,
-        "loshu": loshu,
-        "periods": periods
-    }
+    try:
+        mulank = numerology.calculate_mulank(request.dob)
+        bhagyank = numerology.calculate_bhagyank(request.dob)
+        kua = numerology.calculate_kua(request.dob, request.gender)
+        loshu = numerology.generate_lo_shu_grid(request.dob, mulank, bhagyank, kua)
+        periods = numerology.calculate_personal_periods(request.dob)
+        
+        return {
+            "mulank": mulank,
+            "bhagyank": bhagyank,
+            "kua": kua,
+            "loshu": loshu,
+            "periods": periods
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}

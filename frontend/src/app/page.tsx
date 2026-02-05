@@ -4,6 +4,7 @@ import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import InputForm from '@/components/InputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
+import TimePeriodTracker from '@/components/TimePeriodTracker';
 
 type AnalysisResult = {
     mulank: number;
@@ -11,14 +12,20 @@ type AnalysisResult = {
     kua: number;
     loshu: Record<string, number>;
     periods: {
-        personal_year: number;
-        personal_month: number;
-        personal_day: number;
+        current: {
+            personal_year: number;
+            personal_month: number;
+            personal_day: number;
+            date: string;
+        };
+        yearly_forecast: Array<{ year: number; personal_year: number }>;
+        monthly_forecast: Array<{ month: string; month_num: number; personal_month: number }>;
     };
 };
 
 export default function Home() {
     const [result, setResult] = useState<AnalysisResult | null>(null);
+    const [userInput, setUserInput] = useState<{ name: string; dob: string; gender: string } | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +33,7 @@ export default function Home() {
         setLoading(true);
         setError(null);
         setResult(null);
+        setUserInput(data);
 
         try {
             const response = await fetch('http://127.0.0.1:8000/analyze', {
@@ -95,7 +103,12 @@ export default function Home() {
                             </div>
                         )}
 
-                        {result && <ResultsDisplay data={result} />}
+                        {result && (
+                            <div className="space-y-8">
+                                <ResultsDisplay data={result} />
+                                {userInput && <TimePeriodTracker dob={userInput.dob} />}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
