@@ -16,7 +16,7 @@ export default function LoShuGrid({ gridData }: Props) {
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Lo Shu Grid</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Static Loshu Grid</h3>
             <div className="grid grid-cols-3 gap-2 max-w-[250px] mx-auto aspect-square">
                 {gridPositions.flat().map((num) => {
                     const count = gridData[num] || 0;
