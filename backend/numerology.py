@@ -195,3 +195,39 @@ def calculate_personal_periods(dob: str, target_date: str = None) -> dict:
         "monthly_forecast": monthly_forecast
     }
 
+def calculate_name_number(name: str) -> dict:
+    """
+    Calculates Name Number using Chaldean Numerology method.
+    Mapping:
+    1: A, I, J, Q, Y
+    2: B, K, R
+    3: C, G, L, S
+    4: D, M, T
+    5: E, H, N, X
+    6: U, V, W
+    7: O, Z
+    8: F, P
+    """
+    if not name:
+        return {"total_sum": 0, "single_digit": 0}
+        
+    chaldean_map = {
+        'a': 1, 'i': 1, 'j': 1, 'q': 1, 'y': 1,
+        'b': 2, 'k': 2, 'r': 2,
+        'c': 3, 'g': 3, 'l': 3, 's': 3,
+        'd': 4, 'm': 4, 't': 4,
+        'e': 5, 'h': 5, 'n': 5, 'x': 5,
+        'u': 6, 'v': 6, 'w': 6,
+        'o': 7, 'z': 7,
+        'f': 8, 'p': 8
+    }
+    
+    clean_name = ''.join(c.lower() for c in name if c.isalpha())
+    total_sum = sum(chaldean_map.get(char, 0) for char in clean_name)
+    single_digit = reduce_to_single_digit(total_sum)
+    
+    return {
+        "total_sum": total_sum,
+        "single_digit": single_digit
+    }
+

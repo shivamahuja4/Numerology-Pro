@@ -10,6 +10,10 @@ type AnalysisResult = {
     mulank: number;
     bhagyank: number;
     kua: number;
+    name_number: {
+        total_sum: number;
+        single_digit: number;
+    };
     loshu: Record<string, number>;
     periods: {
         current: {

@@ -29,12 +29,14 @@ def analyze(request: AnalysisRequest):
         bhagyank = numerology.calculate_bhagyank(request.dob)
         kua = numerology.calculate_kua(request.dob, request.gender)
         loshu = numerology.generate_lo_shu_grid(request.dob, mulank, bhagyank, kua)
+        name_number = numerology.calculate_name_number(request.name)
         periods = numerology.calculate_personal_periods(request.dob)
         
         return {
             "mulank": mulank,
             "bhagyank": bhagyank,
             "kua": kua,
+            "name_number": name_number,
             "loshu": loshu,
             "periods": periods
         }

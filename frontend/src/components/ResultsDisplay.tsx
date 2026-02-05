@@ -1,12 +1,16 @@
 import LoShuGrid from './LoShuGrid';
 import TimePeriodTracker from './TimePeriodTracker';
-import { Award, Briefcase, Hash, Calendar, Layers } from 'lucide-react';
+import { Award, Briefcase, Hash, Calendar, Layers, Type } from 'lucide-react';
 
 type Props = {
     data: {
         mulank: number;
         bhagyank: number;
         kua: number;
+        name_number: {
+            total_sum: number;
+            single_digit: number;
+        };
         loshu: Record<string, number>;
         periods: {
             current: {
@@ -22,7 +26,7 @@ type Props = {
 };
 
 function StatCard({ title, value, icon: Icon, colorClass, bgClass, labelColor }: {
-    title: string, value: number, icon: any, colorClass: string, bgClass: string, labelColor: string
+    title: string, value: string | number, icon: any, colorClass: string, bgClass: string, labelColor: string
 }) {
     return (
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
@@ -40,7 +44,15 @@ function StatCard({ title, value, icon: Icon, colorClass, bgClass, labelColor }:
 export default function ResultsDisplay({ data }: Props) {
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Name Number"
+                    value={`${data.name_number.total_sum} (${data.name_number.single_digit})`}
+                    icon={Type}
+                    colorClass="text-blue-600"
+                    bgClass="bg-blue-50"
+                    labelColor="text-blue-600"
+                />
                 <StatCard
                     title="Mulank (Psychic)"
                     value={data.mulank}
