@@ -11,9 +11,14 @@ type AnalysisResult = {
     kua: number;
     loshu: Record<string, number>;
     periods: {
-        personal_year: number;
-        personal_month: number;
-        personal_day: number;
+        current: {
+            personal_year: number;
+            personal_month: number;
+            personal_day: number;
+            date: string;
+        };
+        yearly_forecast: Array<{ year: number; personal_year: number }>;
+        monthly_forecast: Array<{ month: string; month_num: number; personal_month: number }>;
     };
 };
 

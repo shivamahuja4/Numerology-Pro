@@ -99,6 +99,13 @@ def generate_lo_shu_grid(dob: str, mulank: int, bhagyank: int, kua: int) -> dict
             
     return grid_counts
 
+def reduce_for_py_calculation(n: int) -> int:
+    """
+    Standard reduction for Personal Year calculation components.
+    Original master number logic removed as per user request.
+    """
+    return reduce_to_single_digit(n)
+
 def calculate_personal_periods(dob: str, target_date: str = None) -> dict:
     from datetime import datetime
     
@@ -111,20 +118,80 @@ def calculate_personal_periods(dob: str, target_date: str = None) -> dict:
     
     target_parts = target_date.split("-")
     current_year = int(target_parts[0])
-    current_month = int(target_parts[1])
-    current_day = int(target_parts[2])
+    current_month_num = int(target_parts[1])
+    current_day_num = int(target_parts[2])
     
-    # Personal Year = Birth Day + Birth Month + Current Year
-    py = reduce_to_single_digit(birth_day + birth_month + reduce_to_single_digit(current_year))
+    # --- 1. Personal Year (PY) Calculation ---
+    # Formula: PY = (Birth Day + Birth Month + Current Year)
+    # Special Rule: "If born on the 29th: 2+9 = 11. (Keep 11 for the sum)."
     
-    # Personal Month = Personal Year + Current Month
-    pm = reduce_to_single_digit(py + current_month)
+    # Reduce Birth Day (Standard Reduction)
+    # Born on 29th: 2+9=11 -> 2 (No longer keeping 11)
+    r_day = reduce_to_single_digit(birth_day)
+    r_month = reduce_to_single_digit(birth_month)
+    r_year = reduce_to_single_digit(current_year)
     
-    # Personal Day = Personal Month + Current Day
-    pd = reduce_to_single_digit(pm + current_day)
+    # Final Sum: Day + Month + Year
+    total_sum = r_day + r_month + r_year
+    personal_year = reduce_to_single_digit(total_sum)
     
+    # --- 2. Personal Month (PM) Calculation ---
+    # Formula: PM = (Personal Year + Calendar Month Number)
+    # "Where January = 1, December = 12/3 (1+2=3)" -> Checks out with standard reduction
+    r_current_month = reduce_to_single_digit(current_month_num)
+    personal_month = reduce_to_single_digit(personal_year + r_current_month)
+    
+    # --- 3. Personal Day (PD) Calculation ---
+    # Formula: PD = (Personal Month + Calendar Day)
+    r_current_day = reduce_to_single_digit(current_day_num)
+    personal_day = reduce_to_single_digit(personal_month + r_current_day)
+    
+    # --- 4. Forecasting ---
+    
+    # Yearly Forecast (Next 9 years logic, but let's just show next 5-10 years)
+    # "Logic Flow for 9-Year Cycle: NextYear_PY = (CurrentYear_PY + 1) IF NextYear_PY > 9 THEN NextYear_PY = 1"
+    yearly_forecast = []
+    temp_py = personal_year
+    for i in range(10): # Current + 9 years
+        year_val = current_year + i
+        yearly_forecast.append({
+            "year": year_val,
+            "personal_year": temp_py
+        })
+        # Increment Logic
+        temp_py += 1
+        if temp_py > 9:
+            temp_py = 1
+            
+    # Monthly Forecast (For current year)
+    monthly_forecast = []
+    # If PY is 5. Jan: 5+1=6. Feb: 5+2=7 ...
+    # Wait, the prompt says "If PY is 5... Sept: 5+9=14 -> 5"
+    # So we use the FIXED current Personal Year for all months of THIS calendar year.
+    # Note: Personal Year changes on Jan 1st. So for the whole calendar year, PY is constant.
+    
+    months = [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+    ]
+    
+    for idx, m_name in enumerate(months):
+        m_num = idx + 1
+        pm_val = reduce_to_single_digit(personal_year + reduce_to_single_digit(m_num))
+        monthly_forecast.append({
+            "month": m_name,
+            "month_num": m_num,
+            "personal_month": pm_val
+        })
+        
     return {
-        "personal_year": py,
-        "personal_month": pm,
-        "personal_day": pd
+        "current": {
+            "personal_year": personal_year,
+            "personal_month": personal_month,
+            "personal_day": personal_day,
+            "date": target_date
+        },
+        "yearly_forecast": yearly_forecast,
+        "monthly_forecast": monthly_forecast
     }
+
