@@ -231,3 +231,81 @@ def calculate_name_number(name: str) -> dict:
         "single_digit": single_digit
     }
 
+
+# --- Compatibility Chart & Logic ---
+
+# Format: { Mulank: { "Lucky": [List], "Unlucky": [List], "Neutral": [List] } }
+COMPATIBILITY_CHART = {
+    1: {"Lucky": [1, 2, 3, 5, 9], "Unlucky": [8], "Neutral": [4, 6, 7]},
+    2: {"Lucky": [1, 3, 5], "Unlucky": [4, 8, 9], "Neutral": [2, 6, 7]},
+    3: {"Lucky": [1, 2, 3, 5, 9], "Unlucky": [6], "Neutral": [4, 7, 8]},
+    4: {"Lucky": [1, 5, 6, 7, 8], "Unlucky": [2, 9], "Neutral": [3, 4]},
+    5: {"Lucky": [1, 2, 3, 5, 6], "Unlucky": [], "Neutral": [4, 7, 8, 9]},
+    6: {"Lucky": [1, 5, 6, 7], "Unlucky": [3], "Neutral": [2, 4, 8, 9]},
+    7: {"Lucky": [1, 3, 4, 5, 6], "Unlucky": [], "Neutral": [2, 7, 8, 9]},
+    8: {"Lucky": [3, 5, 6, 7], "Unlucky": [1, 2], "Neutral": [4, 8, 9]},
+    9: {"Lucky": [1, 2, 3, 9], "Unlucky": [4, 5], "Neutral": [6, 7, 8]}
+}
+
+def get_compatibility(mulank: int, number: int) -> str:
+    """
+    Returns 'Lucky', 'Unlucky', or 'Neutral' based on Mulank and the number.
+    """
+    if mulank not in COMPATIBILITY_CHART:
+        return "Unknown"
+        
+    chart = COMPATIBILITY_CHART[mulank]
+    
+    if number in chart["Lucky"]:
+        return "Lucky"
+    elif number in chart["Unlucky"]:
+        return "Unlucky"
+    elif number in chart["Neutral"]:
+        return "Neutral"
+    else:
+        # Fallback if somehow a number isn't in any list (shouldn't happen with 1-9)
+        return "Neutral"
+
+def get_lucky_numbers(mulank: int) -> list:
+    """
+    Returns the list of lucky numbers for a given Mulank.
+    """
+    if mulank in COMPATIBILITY_CHART:
+        return COMPATIBILITY_CHART[mulank]["Lucky"]
+    return []
+
+# --- Feature Specific Calculations ---
+
+def calculate_mobile_total(number: str) -> int:
+    """
+    Calculates sum of all digits in mobile number, reduced to single digit.
+    Input: String of numbers.
+    """
+    clean_number = "".join(filter(str.isdigit, number))
+    if not clean_number:
+        return 0
+    total = sum(int(d) for d in clean_number)
+    return reduce_to_single_digit(total)
+
+def calculate_vehicle_total(plate: str) -> int:
+    """
+    Calculates sum of ONLY digits in registration number (ignore alphabets).
+    Input: MH01AB1234 -> 0+1+1+2+3+4 = 11 -> 2
+    """
+    # Extract only digits
+    digits = [int(d) for d in plate if d.isdigit()]
+    if not digits:
+        return 0
+    total = sum(digits)
+    return reduce_to_single_digit(total)
+
+def calculate_house_total(house: str) -> int:
+    """
+    Calculates sum of digits in house number.
+    Input: 101 -> 2
+    """
+    clean_number = "".join(filter(str.isdigit, house))
+    if not clean_number:
+        return 0
+    total = sum(int(d) for d in clean_number)
+    return reduce_to_single_digit(total)

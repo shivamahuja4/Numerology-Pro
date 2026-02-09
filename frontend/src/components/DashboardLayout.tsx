@@ -1,4 +1,4 @@
-import { Home, History, Settings, Menu, User } from 'lucide-react';
+import { Home, History, Settings, Menu, User, Smartphone, Car, House } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -11,18 +11,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </span>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-1">
-                    <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md">
+                    <a href="/" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
                         <Home className="w-4 h-4" />
                         Dashboard
                     </a>
-                    <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                        <History className="w-4 h-4" />
-                        History (Mock)
+                    <a href="/mobile-numerology" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                        <Smartphone className="w-4 h-4" />
+                        Mobile Numerology
                     </a>
-                    <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                        <Settings className="w-4 h-4" />
-                        Settings
+                    <a href="/vehicle-numerology" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                        <Car className="w-4 h-4" />
+                        Vehicle Numerology
                     </a>
+                    <a href="/house-numerology" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                        <House className="w-4 h-4" />
+                        House Numerology
+                    </a>
+                    <div className="pt-4 mt-4 border-t border-gray-100">
+                        <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                            <History className="w-4 h-4" />
+                            History (Mock)
+                        </a>
+                        <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                            <Settings className="w-4 h-4" />
+                            Settings
+                        </a>
+                    </div>
                 </nav>
                 <div className="p-4 border-t border-gray-200">
                     <div className="flex items-center gap-3">
