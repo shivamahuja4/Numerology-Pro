@@ -43,3 +43,76 @@ def analyze(request: AnalysisRequest):
     except Exception as e:
         import traceback
         return {"error": str(e), "traceback": traceback.format_exc()}
+
+class MobileAnalysisRequest(BaseModel):
+    mobile_number: str
+    dob: str
+
+class VehicleAnalysisRequest(BaseModel):
+    vehicle_number: str
+    dob: str
+
+class HouseAnalysisRequest(BaseModel):
+    house_number: str
+    dob: str
+
+@app.post("/analyze/mobile")
+def analyze_mobile(request: MobileAnalysisRequest):
+    try:
+        mulank = numerology.calculate_mulank(request.dob)
+        bhagyank = numerology.calculate_bhagyank(request.dob)
+        mobile_data = numerology.calculate_mobile_total(request.mobile_number)
+        
+        compatibility = numerology.get_compatibility(mulank, mobile_data["single_digit"])
+        
+        return {
+            "mulank": mulank,
+            "bhagyank": bhagyank,
+            "mobile_total": mobile_data["single_digit"],
+            "mobile_compound": mobile_data["total_sum"],
+            "compatibility": compatibility
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}
+
+@app.post("/analyze/vehicle")
+def analyze_vehicle(request: VehicleAnalysisRequest):
+    try:
+        mulank = numerology.calculate_mulank(request.dob)
+        bhagyank = numerology.calculate_bhagyank(request.dob)
+        vehicle_data = numerology.calculate_vehicle_total(request.vehicle_number)
+        
+        compatibility = numerology.get_compatibility(mulank, vehicle_data["single_digit"])
+        
+        return {
+            "mulank": mulank,
+            "bhagyank": bhagyank,
+            "vehicle_total": vehicle_data["single_digit"],
+            "vehicle_compound": vehicle_data["total_sum"],
+            "compatibility": compatibility
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}
+
+@app.post("/analyze/house")
+def analyze_house(request: HouseAnalysisRequest):
+    try:
+        mulank = numerology.calculate_mulank(request.dob)
+        bhagyank = numerology.calculate_bhagyank(request.dob)
+        house_data = numerology.calculate_house_total(request.house_number)
+        
+        compatibility = numerology.get_compatibility(mulank, house_data["single_digit"])
+        
+        return {
+            "mulank": mulank,
+            "bhagyank": bhagyank,
+            "house_total": house_data["single_digit"],
+            "house_compound": house_data["total_sum"],
+            "compatibility": compatibility
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}
+

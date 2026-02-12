@@ -231,3 +231,71 @@ def calculate_name_number(name: str) -> dict:
         "single_digit": single_digit
     }
 
+
+def calculate_mobile_total(mobile_number: str) -> dict:
+    """
+    Sums all digits in the mobile number and reduces to a single digit.
+    Returns { "total_sum": int, "single_digit": int }
+    """
+    # Filter only digits just in case
+    digits = [int(d) for d in mobile_number if d.isdigit()]
+    total = sum(digits)
+    single = reduce_to_single_digit(total)
+    return {"total_sum": total, "single_digit": single}
+
+def calculate_vehicle_total(vehicle_number: str) -> dict:
+    """
+    Sums only the digits in the vehicle registration number.
+    Returns { "total_sum": int, "single_digit": int }
+    """
+    digits = [int(d) for d in vehicle_number if d.isdigit()]
+    total = sum(digits)
+    single = reduce_to_single_digit(total)
+    return {"total_sum": total, "single_digit": single}
+
+def calculate_house_total(house_number: str) -> dict:
+    """
+    Sums the digits of the house number.
+    Returns { "total_sum": int, "single_digit": int }
+    """
+    digits = [int(d) for d in house_number if d.isdigit()]
+    total = sum(digits)
+    single = reduce_to_single_digit(total)
+    return {"total_sum": total, "single_digit": single}
+
+
+def get_compatibility(mulank: int, number: int) -> dict:
+    """
+    Determines if the given number is Lucky (Friendly), Unlucky (Enemy), or Neutral
+    for the given Mulank (1-9).
+    Also returns list of lucky numbers.
+    Based on provided table.
+    """
+    
+    # Table Data
+    # Mulank: { Lucky: [...], Unlucky: [...], Neutral: [...] }
+    compatibility_data = {
+        1: {"lucky": [1, 2, 3, 5, 9], "unlucky": [8],       "neutral": [4, 6, 7]},
+        2: {"lucky": [1, 3, 5],       "unlucky": [4, 8, 9], "neutral": [2, 6, 7]},
+        3: {"lucky": [1, 2, 3, 5, 9], "unlucky": [6],       "neutral": [4, 7, 8]},
+        4: {"lucky": [1, 5, 6, 7, 8], "unlucky": [2, 9],    "neutral": [3, 4]},
+        5: {"lucky": [1, 2, 3, 5, 6], "unlucky": [],        "neutral": [4, 7, 8, 9]}, # Unlucky: None in table
+        6: {"lucky": [1, 5, 6, 7],    "unlucky": [3],       "neutral": [2, 4, 8, 9]},
+        7: {"lucky": [1, 3, 4, 5, 6], "unlucky": [],        "neutral": [2, 7, 8, 9]}, # Unlucky: None
+        8: {"lucky": [3, 5, 6, 7],    "unlucky": [1, 2],    "neutral": [4, 8, 9]},
+        9: {"lucky": [1, 2, 3, 9],    "unlucky": [4, 5],    "neutral": [6, 7, 8]},
+    }
+    
+    data = compatibility_data.get(mulank, {"lucky": [], "unlucky": [], "neutral": []})
+    
+    if number in data["lucky"]:
+        status = "Lucky"
+    elif number in data["unlucky"]:
+        status = "Unlucky"
+    else:
+        status = "Neutral"
+        
+    return {
+        "status": status,
+        "lucky_numbers": data["lucky"]
+    }

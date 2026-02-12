@@ -1,6 +1,13 @@
-import { Home, History, Settings, Menu, User } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, Smartphone, Car, Home, Settings, Menu, User } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+
+    const isActive = (path: string) => {
+        return pathname === path ? "text-blue-600 bg-blue-50" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900";
+    };
+
     return (
         <div className="flex min-h-screen bg-gray-50">
             {/* Sidebar */}
@@ -11,13 +18,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </span>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-1">
-                    <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md">
-                        <Home className="w-4 h-4" />
+                    <a href="/" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive('/')}`}>
+                        <LayoutDashboard className="w-4 h-4" />
                         Dashboard
                     </a>
-                    <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                        <History className="w-4 h-4" />
-                        History (Mock)
+                    <a href="/mobile-numerology" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive('/mobile-numerology')}`}>
+                        <Smartphone className="w-4 h-4" />
+                        Mobile Numerology
+                    </a>
+                    <a href="/vehicle-numerology" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive('/vehicle-numerology')}`}>
+                        <Car className="w-4 h-4" />
+                        Vehicle Numerology
+                    </a>
+                    <a href="/house-numerology" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive('/house-numerology')}`}>
+                        <Home className="w-4 h-4" />
+                        House Numerology
                     </a>
                     <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
                         <Settings className="w-4 h-4" />
