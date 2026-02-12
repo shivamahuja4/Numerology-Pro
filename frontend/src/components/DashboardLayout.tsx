@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Smartphone, Car, Home, Settings, Menu, User, X } from 'lucide-react';
+import { LayoutDashboard, Smartphone, Car, Home, Menu, X } from 'lucide-react';
 import LoginButton from './auth/LoginButton';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -66,24 +66,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         House Numerology
                     </a>
 
-                    <div className="mt-auto pt-8">
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all duration-200">
-                            <Settings className="w-5 h-5 text-gray-400" />
-                            Settings
-                        </a>
-                    </div>
+
                 </nav>
-                <div className="p-6 border-t border-gray-100/50">
-                    <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-50">
-                            <User className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">User Account</p>
-                            <p className="text-xs text-indigo-600 font-medium">Professional</p>
-                        </div>
-                    </div>
-                </div>
+
             </aside>
 
             {/* Main Content */}
