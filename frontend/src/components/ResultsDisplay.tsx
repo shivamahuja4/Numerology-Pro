@@ -1,5 +1,5 @@
 import LoShuGrid from './LoShuGrid';
-import TimePeriodTracker from './TimePeriodTracker';
+import DynamicLoShuGrid from './DynamicLoShuGrid';
 import { Award, Briefcase, Hash, Calendar, Layers, Type } from 'lucide-react';
 
 type Props = {
@@ -26,7 +26,7 @@ type Props = {
 };
 
 function StatCard({ title, value, icon: Icon, colorClass, bgClass, labelColor }: {
-    title: string, value: string | number, icon: any, colorClass: string, bgClass: string, labelColor: string
+    title: string, value: string | number, icon: React.ElementType, colorClass: string, bgClass: string, labelColor: string
 }) {
     return (
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
@@ -89,6 +89,22 @@ export default function ResultsDisplay({ data }: Props) {
                         <h3 className="text-lg font-semibold text-gray-900">Lo Shu Grid</h3>
                     </div>
                     <LoShuGrid gridData={data.loshu} />
+                </div>
+
+                {/* Dynamic Loshu Grid */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+                            <Layers className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900">Dynamic Loshu Grid</h3>
+                    </div>
+                    <DynamicLoShuGrid
+                        gridData={data.loshu}
+                        personalYear={data.periods.current.personal_year}
+                        personalMonth={data.periods.current.personal_month}
+                        personalDay={data.periods.current.personal_day}
+                    />
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">

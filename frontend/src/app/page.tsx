@@ -76,12 +76,7 @@ export default function Home() {
                         <InputForm onSubmit={handleAnalyze} isLoading={loading} />
 
                         {/* Helpful Tip Card (Mock) */}
-                        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
-                            <h4 className="font-semibold text-indigo-900 mb-2">Did you know?</h4>
-                            <p className="text-sm text-indigo-700">
-                                The Lo Shu Grid is a square of numbers 1-9. Each number represents a specific element and direction in Feng Shui.
-                            </p>
-                        </div>
+
                     </div>
 
                     {/* Results Section - Takes up full width on mobile, 8 cols on large screens */}
