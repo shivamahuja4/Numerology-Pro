@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
+import { Car, Sparkles, ArrowRight, Info } from 'lucide-react';
 
 type CompatibilityResult = {
     status: 'Lucky' | 'Unlucky' | 'Neutral';
@@ -32,7 +34,7 @@ export default function VehicleNumerology() {
         setResult(null);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze/vehicle', {
+            const response = await fetch(`${API_BASE_URL}/analyze/vehicle`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,105 +58,154 @@ export default function VehicleNumerology() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-4xl mx-auto space-y-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Vehicle Numerology</h1>
-                    <p className="text-gray-500">Check if your vehicle number is lucky for you.</p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-8rem)]">
+                {/* Left Column: Input Panel */}
+                <div className="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col h-full">
+                    <div className="mb-8">
+                        <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
+                            <Car className="w-6 h-6" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Vehicle Analysis</h1>
+                        <p className="text-gray-500 text-sm">Ensure your vehicle number aligns with your lucky vibrations.</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-6 flex-1">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Date of Birth
+                            </label>
+                            <input
+                                type="date"
+                                required
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-gray-900"
+                                value={formData.dob}
+                                onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Vehicle Number
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. MH01AB1234"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-gray-900 uppercase placeholder-gray-400"
+                                value={formData.vehicle_number}
+                                onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white py-3.5 px-6 rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50 font-medium flex items-center justify-center gap-2 group"
+                        >
+                            {loading ? 'Analyzing...' : (
+                                <>
+                                    Analyze Number
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
+                        </button>
+                    </form>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Input Form */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-fit">
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Date of Birth
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-gray-900"
-                                    value={formData.dob}
-                                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Vehicle Number
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="e.g. MH01AB1234"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all uppercase text-gray-900"
-                                    value={formData.vehicle_number}
-                                    onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Enter full registration number</p>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 font-medium"
-                            >
-                                {loading ? 'Analyzing...' : 'Analyze Number'}
-                            </button>
-                        </form>
-                    </div>
+                {/* Right Column: Results & Info */}
+                <div className="lg:col-span-8 flex flex-col h-full">
+                    {error && (
+                        <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 mb-6">
+                            {error}
+                        </div>
+                    )}
 
-                    {/* Results Display */}
-                    <div className="space-y-6">
-                        {error && (
-                            <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200">
-                                {error}
-                            </div>
-                        )}
+                    {result ? (
+                        <div className="space-y-6">
+                            {/* Primary Result Card */}
+                            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-500" />
 
-                        {result && (
-                            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
-                                <div className="text-center pb-6 border-b border-gray-100">
-                                    <span className={`inline-block px-4 py-1 rounded-full text-sm font-medium mb-2 ${result.compatibility.status === 'Lucky' ? 'bg-green-100 text-green-700' :
-                                        result.compatibility.status === 'Unlucky' ? 'bg-red-100 text-red-700' :
-                                            'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {result.compatibility.status} Number
-                                    </span>
-                                    <div className="text-5xl font-bold text-gray-900">
-                                        {result.vehicle_total} <span className="text-3xl text-gray-400 font-normal">({result.vehicle_compound})</span>
+                                <span className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold mb-6 ${result.compatibility.status === 'Lucky' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                                    result.compatibility.status === 'Unlucky' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+                                        'bg-amber-50 text-amber-700 border border-amber-100'
+                                    }`}>
+                                    <Sparkles className="w-4 h-4" />
+                                    {result.compatibility.status} Number
+                                </span>
+
+                                <div className="relative mb-4">
+                                    <div className="text-8xl font-bold text-gray-900 tracking-tighter">
+                                        {result.vehicle_total}
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-1">Vehicle Number Total</p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-gray-50 p-4 rounded-lg text-center">
-                                        <div className="text-xl font-bold text-gray-900">{result.mulank}</div>
-                                        <div className="text-xs text-gray-500 uppercase tracking-wide">Mulank</div>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-lg text-center">
-                                        <div className="text-xl font-bold text-gray-900">{result.bhagyank}</div>
-                                        <div className="text-xs text-gray-500 uppercase tracking-wide">Bhagyank</div>
+                                    <div className="absolute -top-4 -right-16 bg-gray-50 px-3 py-1 rounded-lg text-gray-500 text-sm font-medium border border-gray-100">
+                                        from {result.vehicle_compound}
                                     </div>
                                 </div>
+                                <p className="text-gray-500 font-medium">Vehicle Number Total</p>
+                            </div>
 
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-900 mb-3">Lucky Numbers for You</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {result.compatibility.lucky_numbers.map((num) => (
-                                            <span key={num} className="w-8 h-8 flex items-center justify-center bg-indigo-50 text-indigo-700 rounded-full font-medium text-sm">
-                                                {num}
-                                            </span>
-                                        ))}
+                            {/* Secondary Stats */}
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                                    <div>
+                                        <div className="text-3xl font-bold text-gray-900">{result.mulank}</div>
+                                        <div className="text-sm text-gray-500 font-semibold uppercase tracking-wide mt-1">Mulank</div>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+                                        <span className="font-bold">M</span>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                                    <div>
+                                        <div className="text-3xl font-bold text-gray-900">{result.bhagyank}</div>
+                                        <div className="text-sm text-gray-500 font-semibold uppercase tracking-wide mt-1">Bhagyank</div>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                                        <span className="font-bold">B</span>
                                     </div>
                                 </div>
                             </div>
-                        )}
 
-                        {!result && !loading && !error && (
-                            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 h-full flex flex-col items-center justify-center">
-                                <p>Enter details to check compatibility</p>
+                            {/* Suggestions */}
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-amber-500" />
+                                    Lucky Numbers for You
+                                </h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {result.compatibility.lucky_numbers.map((num) => (
+                                        <div key={num} className="w-12 h-12 flex items-center justify-center bg-indigo-50 text-indigo-700 rounded-xl font-bold text-lg border border-indigo-100 hover:bg-indigo-100 transition-colors">
+                                            {num}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        // Empty State / Educational Content
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 h-full flex flex-col justify-center items-center text-center">
+                            <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-6 text-gray-300">
+                                <Info className="w-10 h-10" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Vehicle Numerology Insights</h3>
+                            <p className="text-gray-500 max-w-md mx-auto leading-relaxed">
+                                Your vehicle's number plate carries energy that affects safety and reliability. A compatible number can ensure smooth journeys and reduce maintenance issues.
+                            </p>
+                            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-lg">
+                                <div className="p-4 bg-gray-50 rounded-xl">
+                                    <div className="font-semibold text-gray-900 mb-1">Safety</div>
+                                    <div className="text-xs text-gray-500">Accident prevention</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-xl">
+                                    <div className="font-semibold text-gray-900 mb-1">Maintenance</div>
+                                    <div className="text-xs text-gray-500">Reliability</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-xl">
+                                    <div className="font-semibold text-gray-900 mb-1">Travel</div>
+                                    <div className="text-xs text-gray-500">Journey Smoothness</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>
