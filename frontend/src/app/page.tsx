@@ -6,6 +6,7 @@ import InputForm from '@/components/InputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import TimePeriodTracker from '@/components/TimePeriodTracker';
 import CurrentPeriods from '@/components/CurrentPeriods';
+import UserDetailsCard from '@/components/UserDetailsCard';
 import { Calendar, Clock, Star } from 'lucide-react';
 
 type AnalysisResult = {
@@ -69,7 +70,17 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
                 {/* Left Column: Input Panel */}
                 <div className="lg:col-span-4 space-y-8">
-                    <InputForm onSubmit={handleAnalyze} isLoading={loading} />
+                    {result && userInput ? (
+                        <UserDetailsCard
+                            userData={userInput}
+                            onReset={() => {
+                                setResult(null);
+                                setUserInput(null);
+                            }}
+                        />
+                    ) : (
+                        <InputForm onSubmit={handleAnalyze} isLoading={loading} />
+                    )}
 
                     {/* Feature Highlight / Quick Stats (Mock) */}
                     {result ? (
