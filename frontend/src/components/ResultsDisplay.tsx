@@ -46,14 +46,6 @@ export default function ResultsDisplay({ data }: Props) {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Name Number"
-                    value={`${data.name_number.total_sum} (${data.name_number.single_digit})`}
-                    icon={Type}
-                    colorClass="text-blue-600"
-                    bgClass="bg-blue-50"
-                    labelColor="text-blue-600"
-                />
-                <StatCard
                     title="Mulank (Psychic)"
                     value={data.mulank}
                     icon={Award}
@@ -76,6 +68,14 @@ export default function ResultsDisplay({ data }: Props) {
                     colorClass="text-pink-600"
                     bgClass="bg-pink-50"
                     labelColor="text-pink-600"
+                />
+                <StatCard
+                    title="Name Number"
+                    value={`${data.name_number.total_sum} (${data.name_number.single_digit})`}
+                    icon={Type}
+                    colorClass="text-blue-600"
+                    bgClass="bg-blue-50"
+                    labelColor="text-blue-600"
                 />
             </div>
 
