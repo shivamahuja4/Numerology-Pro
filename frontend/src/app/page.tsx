@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
 import InputForm from '@/components/InputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
@@ -43,7 +44,7 @@ export default function Home() {
         setUserInput(data);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze', {
+            const response = await fetch(`${API_BASE_URL}/analyze`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

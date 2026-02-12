@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Smartphone, Sparkles, ArrowRight, Info } from 'lucide-react';
 
@@ -33,7 +34,7 @@ export default function MobileNumerology() {
         setResult(null);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze/mobile', {
+            const response = await fetch(`${API_BASE_URL}/analyze/mobile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,8 +129,8 @@ export default function MobileNumerology() {
                                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-500" />
 
                                 <span className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold mb-6 ${result.compatibility.status === 'Lucky' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                                        result.compatibility.status === 'Unlucky' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
-                                            'bg-amber-50 text-amber-700 border border-amber-100'
+                                    result.compatibility.status === 'Unlucky' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+                                        'bg-amber-50 text-amber-700 border border-amber-100'
                                     }`}>
                                     <Sparkles className="w-4 h-4" />
                                     {result.compatibility.status} Number
