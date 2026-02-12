@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Smartphone, Car, Home, Settings, Menu, User, X } from 'lucide-react';
+import LoginButton from './auth/LoginButton';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -104,9 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-bold border border-indigo-100">
-                            U
-                        </div>
+                        <LoginButton />
                     </div>
                 </header>
                 <main className="flex-1 p-4 md:p-8 overflow-auto">
