@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/api';
+import { createClient } from '@/utils/supabase/client';
 import DashboardLayout from '@/components/DashboardLayout';
 import InputForm from '@/components/InputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
@@ -32,10 +33,40 @@ type AnalysisResult = {
 };
 
 export default function Home() {
+    const [user, setUser] = useState<any>(null);
+    const [authLoading, setAuthLoading] = useState(true);
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [userInput, setUserInput] = useState<{ name: string; dob: string; gender: string } | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            setAuthLoading(false);
+        };
+        checkUser();
+    }, []);
+
+    // Delayed login popup for unauthenticated users
+    useEffect(() => {
+        let timeoutId: any;
+
+        if (result && !user && !loading) {
+            timeoutId = setTimeout(() => {
+                const loginButton = document.getElementById('login-modal-trigger');
+                if (loginButton) {
+                    loginButton.click();
+                }
+            }, 5000);
+        }
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [result, user, loading]);
 
     const handleAnalyze = async (data: { name: string; dob: string; gender: string }) => {
         setLoading(true);
@@ -86,7 +117,20 @@ export default function Home() {
                     {/* Feature Highlight / Quick Stats (Mock) */}
                     {result ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <CurrentPeriods data={result} />
+                            {/* Only show CurrentPeriods if user is logged in, otherwise generic or locked */}
+                            {user ? (
+                                <CurrentPeriods data={result} />
+                            ) : (
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
+                                    <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex flex-col items-center justify-center p-4 text-center">
+                                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                                            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                        </div>
+                                        <p className="text-sm font-semibold text-gray-900">Login to View Daily Insights</p>
+                                    </div>
+                                    <CurrentPeriods data={result} />
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -147,9 +191,26 @@ export default function Home() {
                     )}
 
                     {result && (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <ResultsDisplay data={result} />
-                            {userInput && <TimePeriodTracker dob={userInput.dob} />}
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+                            <ResultsDisplay data={result} isLoggedIn={!!user} />
+
+                            {user ? (
+                                userInput && <TimePeriodTracker dob={userInput.dob} />
+                            ) : (
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Life Path Period Analysis</h3>
+                                    <p className="text-gray-500 mb-6 max-w-md mx-auto">Login to access your detailed 100-year life path analysis, including personal years, months, and days.</p>
+                                    <button
+                                        onClick={() => document.getElementById('login-modal-trigger')?.click()}
+                                        className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    >
+                                        Log In to Unlock
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
