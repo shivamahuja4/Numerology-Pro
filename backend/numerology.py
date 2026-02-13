@@ -299,3 +299,254 @@ def get_compatibility(mulank: int, number: int) -> dict:
         "status": status,
         "lucky_numbers": data["lucky"]
     }
+    
+    if number in data["lucky"]:
+        status = "Lucky"
+    elif number in data["unlucky"]:
+        status = "Unlucky"
+    else:
+        status = "Neutral"
+        
+    return {
+        "status": status,
+        "lucky_numbers": data["lucky"]
+    }
+
+def calculate_pinnacles_and_challenges(dob: str) -> dict:
+    """
+    Calculates 4 Pinnacles and 4 Challenges.
+    Pinnacle Math: Addition. Do not reduce Master Numbers 11 or 22 in intermediate sums.
+    Challenge Math: Absolute difference. Always reduce to single digits (1-9). No Master Numbers.
+    Timing Rule: First Pinnacle ends at 36 - LP.
+    """
+    parts = dob.split("-")
+    birth_year = int(parts[0])
+    birth_month = int(parts[1])
+    birth_day = int(parts[2])
+    
+    # Base Numbers
+    # Month (M)
+    m_pinnacle = birth_month # Preserve 11 for Pinnacles (logic handled in sum)
+    # Actually, the prompt says: "Nov = 11; preserve 11 for Pinnacles"
+    # But for addition M+D, if M=11, we use 11.
+    
+    m_challenge = reduce_to_single_digit(birth_month) # Reduce for Challenges
+    
+    # Day (D)
+    d_pinnacle = birth_day # Preserve but usually simplified? 
+    # Prompt: "Reduced birth day (e.g., 26 = 8)." for Base Numbers. 
+    # But later "Pinnacle Math: Use addition. Do not reduce Master Numbers 11 or 22 if they appear in intermediate sums".
+    # This implies we add the Reduced Base Numbers, but keep the Sum if it is 11 or 22.
+    # "Base Numbers: Month... Day: Reduced birth day... Year: Reduced birth year..."
+    # So we MUST reduce D and Y and M (unless M is 11) BEFORE adding for Pinnacle?
+    # "Month ($M$): Reduced birth month (e.g., Nov = 11; preserve 11 for Pinnacles, reduce to 2 for Challenges)."
+    # "Day ($D$): Reduced birth day (e.g., 26 = 8)."
+    # "Year ($Y$): Reduced birth year (e.g., 1985...=5)."
+    # So D and Y are ALWAYS reduced. M is 11 or reduced.
+    
+    d_reduced = reduce_to_single_digit(birth_day)
+    # Check if we should preserve 11/22 for Day? Prompt doesn't explicitly say for Day/Year base, only Month.
+    # "Day ($D$): Reduced birth day (e.g., 26 = 8)." -> Implies always reduce.
+    # "Year ($Y$): Reduced birth year... = 5". -> Implies always reduce.
+    
+    y_reduced = reduce_to_single_digit(reduce_to_single_digit(birth_year)) # Recursive reduction to be sure? 
+    # The reduce_to_single_digit function already loops until < 10.
+    # Year calculation example: 1985 = 1+9+8+5 = 23 = 5. reduce_to_single_digit(1985) does this.
+    y_reduced = reduce_to_single_digit(birth_year)
+
+    # Life Path (LP) for Timing
+    # "Full reduction of DOB"
+    lp = reduce_to_single_digit(calculate_bhagyank(dob))
+    # Wait, calculate_bhagyank returns single digit.
+    # Prompt: "The First Pinnacle ends at age 36 minus the user’s Life Path number. If LP=11 or 22, use 2 or 4 for the subtraction logic."
+    # Since calculate_bhagyank already reduces to single digit, we don't know if it was 11 or 22.
+    # We need a non-reducing bhagyank calculation or check the intermediate.
+    # Let's re-calculate LP properly for Master detection.
+    
+    total_dob_sum = sum(int(d) for d in dob if d.isdigit())
+    lp_intermediate = total_dob_sum
+    while lp_intermediate > 9 and lp_intermediate not in [11, 22]:
+         lp_intermediate = sum(int(d) for d in str(lp_intermediate))
+    
+    lp_for_timing = lp_intermediate
+    if lp_for_timing == 11:
+        deduction = 2
+    elif lp_for_timing == 22:
+        deduction = 4
+    else:
+        # If it's still > 9 (e.g. 33, though prompt only mentions 11/22), reduce it?
+        # Standard numerology reduces 33 to 6 usually unless specified.
+        # "If LP=11 or 22, use 2 or 4...". Implies otherwise use LP value (which should be single digit).
+        # Our while loop ensures it is single digit OR 11/22.
+        if lp_for_timing > 9 and lp_for_timing not in [11, 22]:
+             lp_for_timing = reduce_to_single_digit(lp_for_timing) # Should be covered by while loop
+        deduction = reduce_to_single_digit(lp_for_timing)
+
+    # Calculation Helpers
+    def pinnacle_add(a, b):
+        s = a + b
+        # "Do not reduce Master Numbers 11 or 22 if they appear in intermediate sums (e.g., M(11)+D(11)=22)."
+        if s in [11, 22]:
+            return s
+        return reduce_to_single_digit(s)
+
+    def challenge_sub(a, b):
+        diff = abs(a - b)
+        # "Always reduce all numbers to single digits (1-9) before subtracting."
+        # Use m_challenge, d_reduced, y_reduced which are single digits (M might be 11? No m_challenge is reduced).
+        return reduce_to_single_digit(diff)
+    
+    # Base for Pinnacles
+    # M: "Nov = 11; preserve 11 for Pinnacles". 
+    if birth_month == 11:
+        m_base_p = 11
+    else:
+        m_base_p = reduce_to_single_digit(birth_month)
+        
+    d_base_p = d_reduced
+    y_base_p = y_reduced
+
+    # Pinnacles
+    p1 = pinnacle_add(m_base_p, d_base_p)
+    p2 = pinnacle_add(d_base_p, y_base_p)
+    p3 = pinnacle_add(p1, p2)
+    p4 = pinnacle_add(m_base_p, y_base_p)
+    
+    # Challenges
+    # "reduce to single digits... before subtracting"
+    m_base_c = reduce_to_single_digit(birth_month)
+    d_base_c = d_reduced
+    y_base_c = y_reduced
+    
+    c1 = challenge_sub(m_base_c, d_base_c)
+    c2 = challenge_sub(d_base_c, y_base_c)
+    c3 = challenge_sub(c1, c2)
+    c4 = challenge_sub(m_base_c, y_base_c)
+    
+    # Ranges
+    end_p1 = 36 - deduction
+    range_p1 = f"Birth to {end_p1}"
+    
+    start_p2 = end_p1 + 1
+    end_p2 = start_p2 + 8 # "Next 9 Years" (inclusive? usually 9 year cycle. e.g. 0-27 (28 yrs? No 36-9=27. 0-27 is 28 years. 28-36 is 9 years).
+    # Prompt: "Birth to (36-LP)". "Next 9 Years".
+    # Implementation: Age ranges.
+    range_p2 = f"{start_p2} to {end_p2}"
+    
+    start_p3 = end_p2 + 1
+    end_p3 = start_p3 + 8 # Next 9 Years
+    range_p3 = f"{start_p3} to {end_p3}"
+    
+    start_p4 = end_p3 + 1
+    range_p4 = f"{start_p4}+"
+    
+    return [
+        {"cycle": "I (Spring)", "range": range_p1, "pinnacle": p1, "challenge": c1},
+        {"cycle": "II (Summer)", "range": range_p2, "pinnacle": p2, "challenge": c2},
+        {"cycle": "III (Autumn)", "range": range_p3, "pinnacle": p3, "challenge": c3},
+        {"cycle": "IV (Winter)", "range": range_p4, "pinnacle": p4, "challenge": c4},
+    ]
+
+def calculate_essence(dob: str, full_name: str) -> list:
+    """
+    Calculates Essence (Event) Number Grid for age 0 to 100.
+    """
+    if not full_name:
+        return []
+
+    # Parse Name
+    # "Required Inputs: Full Name (First, Middle, Last)"
+    # We assume space separated.
+    parts = full_name.split()
+    first = parts[0] if len(parts) > 0 else ""
+    last = parts[-1] if len(parts) > 1 else ""
+    middle = "".join(parts[1:-1]) if len(parts) > 2 else "" 
+    # Logic if 2 names: First, Last. Middle is empty.
+    # Logic if 3 names: First, Middle, Last.
+    # Logic if >3 names: First, Middle...Middle, Last. Join Middles? 
+    # "IF MiddleName = NULL THEN MiddleValue = 0."
+    
+    # Clean names
+    def clean(s):
+        return ''.join(c.upper() for c in s if c.isalpha())
+    
+    first = clean(first)
+    middle = clean(middle)
+    last = clean(last)
+    
+    # Helper to get sequence of letters and durations
+    chaldean_map = {
+        'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+        'B': 2, 'K': 2, 'R': 2,
+        'C': 3, 'G': 3, 'L': 3, 'S': 3,
+        'D': 4, 'M': 4, 'T': 4,
+        'E': 5, 'H': 5, 'N': 5, 'X': 5,
+        'U': 6, 'V': 6, 'W': 6,
+        'O': 7, 'Z': 7,
+        'F': 8, 'P': 8
+    }
+    
+    def get_letter_sequence(name_str):
+        seq = []
+        for char in name_str:
+            val = chaldean_map.get(char, 0)
+            seq.append({"char": char, "val": val, "duration": val}) # duration = value
+        return seq
+    
+    seq_first = get_letter_sequence(first)
+    seq_middle = get_letter_sequence(middle)
+    seq_last = get_letter_sequence(last)
+    
+    birth_year = int(dob.split("-")[0])
+    
+    essence_grid = []
+    
+    # Pointers for each name part
+    # We need to track current letter index and remaining years for that letter
+    
+    def init_tracker(seq):
+        if not seq: return None
+        return {"index": 0, "remaining": seq[0]["duration"]}
+        
+    t_first = init_tracker(seq_first)
+    t_middle = init_tracker(seq_middle)
+    t_last = init_tracker(seq_last)
+    
+    for age in range(101): # 0 to 100
+        year = birth_year + age
+        
+        # Calculate Essence
+        val_f = seq_first[t_first["index"]]["val"] if t_first else 0
+        val_m = seq_middle[t_middle["index"]]["val"] if t_middle else 0
+        val_l = seq_last[t_last["index"]]["val"] if t_last else 0
+        
+        total = val_f + val_m + val_l
+        
+        # Reduce to single digit or Master Number (11, 22)
+        # "Reduce the total to a single digit (1–9) or Master Number (11, 22)."
+        reduced_essence = total
+        while reduced_essence > 9 and reduced_essence not in [11, 22]:
+             reduced_essence = sum(int(d) for d in str(reduced_essence))
+             
+        essence_grid.append({
+            "age": age,
+            "year": year,
+            "essence": reduced_essence
+        })
+        
+        # Advance Pointers
+        def advance(tracker, seq):
+            if not tracker: return
+            tracker["remaining"] -= 1
+            if tracker["remaining"] <= 0:
+                # Move to next letter
+                tracker["index"] += 1
+                if tracker["index"] >= len(seq):
+                    tracker["index"] = 0 # Loop
+                tracker["remaining"] = seq[tracker["index"]]["duration"]
+                
+        advance(t_first, seq_first)
+        advance(t_middle, seq_middle)
+        advance(t_last, seq_last)
+        
+    return essence_grid

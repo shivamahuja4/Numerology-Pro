@@ -10,6 +10,7 @@ import TimePeriodTracker from '@/components/TimePeriodTracker';
 import CurrentPeriods from '@/components/CurrentPeriods';
 import UserDetailsCard from '@/components/UserDetailsCard';
 import { Calendar, Clock, Star } from 'lucide-react';
+import LifeRoadmap from '@/components/LifeRoadmap';
 
 type AnalysisResult = {
     mulank: number;
@@ -29,6 +30,10 @@ type AnalysisResult = {
         };
         yearly_forecast: Array<{ year: number; personal_year: number }>;
         monthly_forecast: Array<{ month: string; month_num: number; personal_month: number }>;
+    };
+    life_roadmap: {
+        pinnacles_challenges: Array<any>;
+        essence: Array<any>;
     };
 };
 
@@ -195,14 +200,33 @@ export default function Home() {
                             <ResultsDisplay data={result} isLoggedIn={!!user} />
 
                             {user ? (
-                                userInput && <TimePeriodTracker dob={userInput.dob} />
+                                <div className="flex flex-col gap-8">
+                                    {/* Life Roadmap (Pinnacles) - Full Width */}
+                                    <div className="w-full">
+                                        {result.life_roadmap && (
+                                            <LifeRoadmap
+                                                pinnacleData={result.life_roadmap.pinnacles_challenges}
+                                            />
+                                        )}
+                                    </div>
+
+                                    {/* Time Periods & Essence - Full Width */}
+                                    <div className="w-full">
+                                        {userInput && (
+                                            <TimePeriodTracker
+                                                dob={userInput.dob}
+                                                essenceData={result.life_roadmap?.essence}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
                                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Life Path Period Analysis</h3>
-                                    <p className="text-gray-500 mb-6 max-w-md mx-auto">Login to access your detailed 100-year life path analysis, including personal years, months, and days.</p>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Life Path & Roadmap Analysis</h3>
+                                    <p className="text-gray-500 mb-6 max-w-md mx-auto">Login to access your detailed 100-year life path analysis, including personal years, pinnacles, challenges, and essence numbers.</p>
                                     <button
                                         onClick={() => document.getElementById('login-modal-trigger')?.click()}
                                         className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
