@@ -99,8 +99,8 @@ export default function LoginButton() {
                     </button>
 
                     <div className="text-center mb-8">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h3>
-                        <p className="text-gray-500 text-sm">Sign in to access your dashboard</p>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Unlock Your Report</h3>
+                        <p className="text-gray-500 text-sm">Login to see your detailed numerology report</p>
                     </div>
 
                     <button
@@ -154,6 +154,7 @@ export default function LoginButton() {
     return (
         <>
             <button
+                id="login-modal-trigger"
                 onClick={() => setIsModalOpen(true)}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transform hover:-translate-y-0.5 text-sm"
             >
