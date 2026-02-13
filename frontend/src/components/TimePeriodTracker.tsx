@@ -4,8 +4,16 @@ import { useState, useMemo, useRef } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { ChevronDown, ChevronRight, Clock } from 'lucide-react';
 
+
+type EssenceData = {
+    age: number;
+    year: number;
+    essence: number;
+};
+
 type Props = {
     dob: string; // YYYY-MM-DD
+    essenceData?: EssenceData[];
 };
 
 type MonthData = {
@@ -19,6 +27,7 @@ type YearData = {
     startMonth: string;
     endMonth: string;
     personalYear: number;
+    essence: number | null;
     months: MonthData[];
     isCurrentYear: boolean;
 };
@@ -36,7 +45,7 @@ const reduceToSingleDigit = (n: number): number => {
     return n;
 };
 
-export default function TimePeriodTracker({ dob }: Props) {
+export default function TimePeriodTracker({ dob, essenceData }: Props) {
     const virtuosoRef = useRef<VirtuosoHandle>(null);
     const [expandedYear, setExpandedYear] = useState<number | null>(null);
 
@@ -50,6 +59,12 @@ export default function TimePeriodTracker({ dob }: Props) {
 
         const data: YearData[] = [];
         const currentYear = new Date().getFullYear();
+
+        // Create lookup map for Essence data
+        const essenceMap = new Map<number, number>();
+        if (essenceData) {
+            essenceData.forEach(e => essenceMap.set(e.year, e.essence));
+        }
 
         for (let i = 0; i < 100; i++) {
             const year = birthYear + i;
@@ -82,12 +97,13 @@ export default function TimePeriodTracker({ dob }: Props) {
                 startMonth: `Jan ${year}`,
                 endMonth: `Jan ${year + 1}`,
                 personalYear,
+                essence: essenceMap.get(year) ?? null,
                 months,
                 isCurrentYear: year === currentYear
             });
         }
         return data;
-    }, [dob]);
+    }, [dob, essenceData]);
 
     // Find initial index to scroll to
     const initialIndex = useMemo(() => {
@@ -113,9 +129,10 @@ export default function TimePeriodTracker({ dob }: Props) {
 
             {/* List Header */}
             <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                <div className="col-span-2">Age</div>
-                <div className="col-span-5">Time Window</div>
+                <div className="col-span-1">Age</div>
+                <div className="col-span-4">Time Window</div>
                 <div className="col-span-3 text-center">Personal Year</div>
+                <div className="col-span-2 text-center">Essence</div>
                 <div className="col-span-2 text-right">Action</div>
             </div>
 
@@ -132,13 +149,21 @@ export default function TimePeriodTracker({ dob }: Props) {
                                 className={`grid grid-cols-12 gap-4 p-4 items-center cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${item.isCurrentYear ? 'bg-blue-50 border-blue-100' : ''}`}
                                 onClick={() => toggleYear(item.year)}
                             >
-                                <div className="col-span-2 font-medium text-gray-900">{item.age}</div>
-                                <div className="col-span-5 text-gray-600 text-sm">{item.startMonth} - {item.endMonth}</div>
+                                <div className="col-span-1 font-medium text-gray-900">{item.age}</div>
+                                <div className="col-span-4 text-gray-600 text-sm">{item.startMonth} - {item.endMonth}</div>
                                 <div className="col-span-3 flex justify-center">
                                     <span className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${item.isCurrentYear ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
                                         }`}>
                                         {item.personalYear}
                                     </span>
+                                </div>
+                                <div className="col-span-2 flex justify-center">
+                                    {item.essence !== null && (
+                                        <span className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${item.isCurrentYear ? 'bg-purple-100 text-purple-700' : 'bg-purple-50 text-purple-700'
+                                            }`}>
+                                            {item.essence}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="col-span-2 flex justify-end text-gray-400">
                                     {expandedYear === item.year ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}

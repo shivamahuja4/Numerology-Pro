@@ -37,13 +37,19 @@ def analyze(request: AnalysisRequest):
         name_number = numerology.calculate_name_number(request.name)
         periods = numerology.calculate_personal_periods(request.dob)
         
+        life_roadmap = {
+            "pinnacles_challenges": numerology.calculate_pinnacles_and_challenges(request.dob),
+            "essence": numerology.calculate_essence(request.dob, request.name)
+        }
+        
         return {
             "mulank": mulank,
             "bhagyank": bhagyank,
             "kua": kua,
             "name_number": name_number,
             "loshu": loshu,
-            "periods": periods
+            "periods": periods,
+            "life_roadmap": life_roadmap
         }
     except Exception as e:
         import traceback
